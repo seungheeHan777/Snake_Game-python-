@@ -1,4 +1,6 @@
 import pygame
+from datetime import datetime
+from datetime import timedelta
 
 # Define the colors we will use in RGB format
 BLACK = (  0,   0,   0)
@@ -25,6 +27,10 @@ fps = pygame.time.Clock() # 프레임
 first=[200,20]
 second=[first[0]-20,first[1]]
 snake_position=[first,[first[0]-20,first[1]],[first[0]-40,first[1]],[first[0]-60,first[1]]]
+
+# 뱀이 자동으로 움직이게 하기위한 시간 계산
+last_moved = datetime.now()
+direction = ''
 # 함수 생성
 
 # 먹이 생성 함수
@@ -47,28 +53,39 @@ def follow_head(position):
 #블럭을 움직이는 함수
 
 def move_block():
+    global last_moved,direction
     if event.type == pygame.KEYDOWN:
         if event.key == pygame.K_UP:
-            # snake_position[1][0]=snake_position[0][0]
-            # snake_position[1][1]=snake_position[0][1]
-            follow_head(snake_position)
-            snake_position[0][1] -= 20         # 블록의 y 좌표를 20 뺀다
+            if not direction =='D':                # 최근에 이동한 방향과 반대 방향으로는 이동할 수 없다
+                follow_head(snake_position)
+                snake_position[0][1] -= 20         # 블록의 y 좌표를 20 뺀다
+                last_moved = datetime.now()        # 방향키를 입력한 시간을 기록
+                direction = 'U'                    # 방향 저장하는 변수에 상하좌우을 저장
         elif event.key == pygame.K_DOWN:
-            follow_head(snake_position)
-            snake_position[0][1] += 20         # 블록의 y 좌표를 20 더한다
+            if not direction =='U':                # 최근에 이동한 방향과 반대 방향으로는 이동할 수 없다
+                follow_head(snake_position)
+                snake_position[0][1] += 20         # 블록의 y 좌표를 20 더한다
+                last_moved = datetime.now()        # 방향키를 입력한 시간을 기록
+                direction = 'D'                    # 방향 저장하는 변수에 상하좌우을 저장
         elif event.key == pygame.K_LEFT:
-            follow_head(snake_position)
-            snake_position[0][0] -= 20         # 블록의 x 좌표를 20 뺀다
+            if not direction =='R':                # 최근에 이동한 방향과 반대 방향으로는 이동할 수 없다
+                follow_head(snake_position)
+                snake_position[0][0] -= 20         # 블록의 x 좌표를 20 뺀다
+                last_moved = datetime.now()        # 방향키를 입력한 시간을 기록
+                direction = 'L'                    # 방향 저장하는 변수에 상하좌우을 저장
         elif event.key == pygame.K_RIGHT:
-            follow_head(snake_position)
-            snake_position[0][0] += 20         # 블록의 x 좌표를 20 더한다
+            if not direction =='L':                # 최근에 이동한 방향과 반대 방향으로는 이동할 수 없다
+                follow_head(snake_position)
+                snake_position[0][0] += 20         # 블록의 x 좌표를 20 더한다
+                last_moved = datetime.now()        # 방향키를 입력한 시간을 기록
+                direction = 'R'                    # 방향 저장하는 변수에 상하좌우을 저장
 
     
 # 게임하는 동안 작동하는 함수
 def rungame():
-    global running,event
+    global running,event,last_moved,direction
     while running:
-        fps.tick(10) #초당 10프레임?로 재
+        fps.tick(30) #초당 10프레임?로 재
         screen.fill(WHITE)
         for i in range(len(snake_position)):
             snake(snake_position[i])
@@ -77,6 +94,21 @@ def rungame():
             move_block()    #블럭을 움직이는 함수
             if event.type == pygame.QUIT: #창을 닫는 이벤트 발생했는가?
                 running = False
+
+        if timedelta(seconds=0.2) <= datetime.now() - last_moved:
+            if direction == 'U':
+                follow_head(snake_position)
+                snake_position[0][1] -= 20         # 블록의 y 좌표를 20 뺀다      
+            elif direction == 'D':
+                follow_head(snake_position)
+                snake_position[0][1] += 20         # 블록의 y 좌표를 20 더한다
+            elif direction == 'L':
+                follow_head(snake_position)
+                snake_position[0][0] -= 20         # 블록의 x 좌표를 20 뺀다
+            elif  direction== 'R':
+                follow_head(snake_position)
+                snake_position[0][0] += 20         # 블록의 x 좌표를 20 더한다
+            last_moved = datetime.now()
             
         # This MUST happen after all the other drawing commands.
         pygame.display.flip()   #update 와 비슷하지만 flip은 전체 surface를 업데이트, update는 특정 부분 가능
