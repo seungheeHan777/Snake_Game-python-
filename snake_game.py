@@ -1,7 +1,7 @@
 import pygame
 from datetime import datetime
 from datetime import timedelta
-
+from random import randrange
 # Define the colors we will use in RGB format
 BLACK = (  0,   0,   0)
 WHITE = (255, 255, 255)
@@ -28,19 +28,31 @@ fps = pygame.time.Clock() # 프레임
 ##snake_position=[first,[first[0]-20,first[1]],[first[0]-40,first[1]],[first[0]-60,first[1]]]
 snake_position=[[200,20],[180,20],[160,20],[140,20]]
 
+# 먹이의 좌표값
+# first =[120,120]
+apple_position=[120,120]
 # 뱀이 자동으로 움직이게 하기위한 시간 계산
 last_moved = datetime.now()
 direction = ''
 # 함수 생성
-
+# 먹이 클래스 
 # 먹이 생성 함수
-def apple():
-    pygame.draw.rect(screen, RED,[120,120,20,20],0)
+class Apple:
+    def __init__(self,position):
+        pygame.draw.rect(screen, RED,[position[0],position[1],20,20],0)
+        print("먹이의 좌표는",position[0],position[1])
+# 랜덤으로 먹이 생성
+    def random(self,position):
+        position[0]=randrange(0,400,20)
+        position[1]=randrange(0,400,20)
+        print("새로운 먹이의 좌표는",position[0],position[1])
+##        pygame.draw.rect(screen, RED,[apple_position[0],apple_position[1],20,20],0)
+
 
 # 스네이크 클래스
 class Snake:
     def __init__(self):
-        print("")
+        print()
 ##        self.positions = [(2,0),(1, 0),(0,0)]  # 뱀의 위치, (2,0이 머리)
 ##        self.direction = ''
         
@@ -93,16 +105,19 @@ class Snake:
 def rungame():
     global running,event,last_moved,direction
     snake = Snake()
+    apple = Apple(apple_position)
     while running:
         fps.tick(30) #초당 10프레임?로 재
         screen.fill(WHITE)
         for i in range(len(snake_position)):
             snake.make_snake(snake_position[i])
-        apple()
+        Apple(apple_position)  # apple을 사용하면 먹이가 생성이 안됨 ??
         for event in pygame.event.get(): #이벤트의 발생 여부에 따른 반복문 -> 중간에 발생한 이벤트를 캐치하고 검사
             snake.move_block()    #블럭을 움직이는 함수
             if event.type == pygame.QUIT: #창을 닫는 이벤트 발생했는가?
                 running = False
+
+# 게임이 시작하고 뱀이 마지막으로 이동한 방향으로 쭉 이동한다.
 
         if timedelta(seconds=0.1) <= datetime.now() - last_moved:
             if direction == 'U':
@@ -118,7 +133,14 @@ def rungame():
                 snake.follow_head(snake_position)
                 snake_position[0][0] += 20         # 블록의 x 좌표를 20 더한다
             last_moved = datetime.now()
-            
+# 뱀이 먹이를 먹은 경우 다음 먹이의 좌표가 랜덤으로 생성된다.
+        if snake_position[0] == apple_position:
+            apple.random(apple_position)
+
+# 게임 오버
+# 뱀이 벽에 닿았을 때, 게임이 종료된다.
+        if (snake_position[0][0]>=400)or(snake_position[0][1]>=400)or(snake_position[0][0]<=0) or(snake_position[0][1]<=0) :
+            running = False
         # This MUST happen after all the other drawing commands.
         pygame.display.flip()   #update 와 비슷하지만 flip은 전체 surface를 업데이트, update는 특정 부분 가능
 
