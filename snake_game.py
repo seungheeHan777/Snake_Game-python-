@@ -40,11 +40,15 @@ direction = ''
 class Apple:
     def __init__(self,position):
         pygame.draw.rect(screen, RED,[position[0],position[1],20,20],0)
-        print("먹이의 좌표는",position[0],position[1])
 # 랜덤으로 먹이 생성
     def random(self,position):
         position[0]=randrange(0,400,20)
         position[1]=randrange(0,400,20)
+        # 랜덤으로 생성된 먹이가 뱀이 지나가고 있는 경로에 있을 경우 다시 좌표를 지정한다.
+        for i in snake_position:
+            if position == i :
+                self.random(position)
+                print("새로운  먹이의 좌표를 재설정합니다.!")
         print("새로운 먹이의 좌표는",position[0],position[1])
 ##        pygame.draw.rect(screen, RED,[apple_position[0],apple_position[1],20,20],0)
 
@@ -88,7 +92,9 @@ class Snake:
                     last_moved = datetime.now()        # 방향키를 입력한 시간을 기록
                     direction = 'D'                    # 방향 저장하는 변수에 상하좌우을 저장
             elif event.key == pygame.K_LEFT:
-                if not direction =='R':                # 최근에 이동한 방향과 반대 방향으로는 이동할 수 없다
+                if direction == '':
+                    print("다른 방향키를 눌러 주세요!")
+                elif not direction =='R':                # 최근에 이동한 방향과 반대 방향으로는 이동할 수 없다
                     self.follow_head(snake_position)
                     snake_position[0][0] -= 20         # 블록의 x 좌표를 20 뺀다
                     last_moved = datetime.now()        # 방향키를 입력한 시간을 기록
@@ -110,7 +116,7 @@ def rungame():
     snake = Snake()
     apple = Apple(apple_position)
     while running:
-        fps.tick(30) #초당 10프레임?로 재
+        fps.tick(60) #초당 10프레임?로 재
         screen.fill(WHITE)
         for i in range(len(snake_position)):
             snake.make_snake(snake_position[i])
