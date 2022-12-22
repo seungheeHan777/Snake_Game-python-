@@ -99,6 +99,9 @@ class Snake:
                     snake_position[0][0] += 20         # 블록의 x 좌표를 20 더한다
                     last_moved = datetime.now()        # 방향키를 입력한 시간을 기록
                     direction = 'R'                    # 방향 저장하는 변수에 상하좌우을 저장
+    # 뱀이 먹이를 먹었을 때 길이가 늘어나는 것
+    def add(self):
+        snake_position.append([snake_position[-1][0],snake_position[-1][1]])    #append(apple_position)하면 안됨. 먹이가 뱀꼬리에 붙어다니는 꼴이 됨 왠지는 모름
 
 
 # 게임하는 동안 작동하는 함수
@@ -135,11 +138,16 @@ def rungame():
             last_moved = datetime.now()
 # 뱀이 먹이를 먹은 경우 다음 먹이의 좌표가 랜덤으로 생성된다.
         if snake_position[0] == apple_position:
+            snake.add()
             apple.random(apple_position)
+            
 
 # 게임 오버
 # 뱀이 벽에 닿았을 때, 게임이 종료된다.
-        if (snake_position[0][0]>=400)or(snake_position[0][1]>=400)or(snake_position[0][0]<=0) or(snake_position[0][1]<=0) :
+        if (snake_position[0][0]>400)or(snake_position[0][1]>400)or(snake_position[0][0]<0) or(snake_position[0][1]<0) :
+            running = False # 이 부분을 나중에는 실행 종료가 되는 것이 아니라 게임 오버된 상태에서 멈췄는 것으로 바꾸는 것이 목표
+# 뱀의 머리가 뱀의 몸통에 부딪히는 경우 게임 오버
+        if snake_position[0] in snake_position[1:] :
             running = False
         # This MUST happen after all the other drawing commands.
         pygame.display.flip()   #update 와 비슷하지만 flip은 전체 surface를 업데이트, update는 특정 부분 가능
