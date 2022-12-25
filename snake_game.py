@@ -2,6 +2,7 @@ import pygame
 from datetime import datetime
 from datetime import timedelta
 from random import randrange
+import time
 # Define the colors we will use in RGB format
 BLACK = (  0,   0,   0)
 WHITE = (255, 255, 255)
@@ -139,12 +140,29 @@ def gameover():
 # 뱀이 벽에 닿았을 때, 게임이 종료된다.
 
     if (snake_position[0][0]>380)or(snake_position[0][1]>380)or(snake_position[0][0]<0) or(snake_position[0][1]<0) :
-        running = False # 이 부분을 나중에는 실행 종료가 되는 것이 아니라 게임 오버된 상태에서 멈췄는 것으로 바꾸는 것이 목표
-        
+##        running = False # 이 부분을 나중에는 실행 종료가 되는 것이 아니라 게임 오버된 상태에서 멈췄는 것으로 바꾸는 것이 목표
+        while running:
+            time.sleep(0.5)
+            screen.fill(RED)
+            myText = myFont.render("GAME OVER ",True, BLACK)
+            screen.blit(myText, (90,100)) #(글자변수, 위치)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT: #창을 닫는 이벤트 발생했는가?
+                     running = False
+            pygame.display.update()
 # 뱀의 머리가 뱀의 몸통에 부딪히는 경우 게임 오버
 
     if snake_position[0] in snake_position[1:] :
-        running = False
+##        running = False
+        while running:
+            time.sleep(0.5)
+            screen.fill(RED)
+            myText = myFont.render("GAME OVER ",True, BLACK)
+            screen.blit(myText, (90,100)) #(글자변수, 위치)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT: #창을 닫는 이벤트 발생했는가?
+                     running = False
+            pygame.display.update()
 
 # 게임 승리
 
