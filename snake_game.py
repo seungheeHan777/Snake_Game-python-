@@ -13,6 +13,7 @@ pygame.init() #pygame 모듈 초기화
 size   = [400, 400]
 screen = pygame.display.set_mode(size) #display 사이즈 지정
 pygame.display.set_caption("snake game")
+myFont = pygame.font.SysFont(None, 50) #(글자체, 글자크기) None=기본글자체
 
 #이벤트 루프 pygame 유지
 
@@ -144,15 +145,27 @@ def gameover():
 
     if snake_position[0] in snake_position[1:] :
         running = False
-        
-# 게임하는 동안 작동하는 함수
+
+# 게임 승리
+
+def victory():
+    global running
+    if (len(snake_position)>=10):
+        while running:
+            screen.fill(GREEN)
+            myText = myFont.render("WIN",True, BLACK)
+            screen.blit(myText, (150,100)) #(글자변수, 위치)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT: #창을 닫는 이벤트 발생했는가?
+                     running = False
+            pygame.display.update()
 
 def rungame():
-    global running,event,last_moved,direction
+    global running,event,last_moved,direction,myFont
     snake = Snake()
     apple = Apple(apple_position)
     while running:
-        fps.tick(60) #초당 10프레임?로 재
+        fps.tick(30) #초당 10프레임?로 재
         screen.fill(WHITE)
         for i in range(len(snake_position)):
             snake.make_snake(snake_position[i])
@@ -171,6 +184,9 @@ def rungame():
         if snake_position[0] == apple_position:
             snake.add()
             apple.random(apple_position)
+# 게임 승리
+     
+        victory()
 
 # 게임 오버
         gameover()
