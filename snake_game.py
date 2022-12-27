@@ -34,7 +34,6 @@ snake_position=[[200,20],[180,20],[160,20],[140,20]]
 apple_position=[120,120]
 
 # 뱀이 자동으로 움직이게 하기위한 시간 계산
-
 last_moved = datetime.now()
 direction = ''
 
@@ -146,6 +145,8 @@ def gameover():
             screen.fill(RED)
             myText = myFont.render("GAME OVER ",True, BLACK)
             screen.blit(myText, (90,100)) #(글자변수, 위치)
+            myText = myFont.render("SCORE : "+str(len(snake_position)),True, BLACK)
+            screen.blit(myText, (90,150)) #(글자변수, 위치)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: #창을 닫는 이벤트 발생했는가?
                      running = False
@@ -159,6 +160,8 @@ def gameover():
             screen.fill(RED)
             myText = myFont.render("GAME OVER ",True, BLACK)
             screen.blit(myText, (90,100)) #(글자변수, 위치)
+            myText = myFont.render("SCORE : "+str(len(snake_position)),True, BLACK)
+            screen.blit(myText, (90,150)) #(글자변수, 위치)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: #창을 닫는 이벤트 발생했는가?
                      running = False
@@ -168,7 +171,7 @@ def gameover():
 
 def victory():
     global running
-    if (len(snake_position)>=10):
+    if (len(snake_position)>=400):
         while running:
             screen.fill(GREEN)
             myText = myFont.render("WIN",True, BLACK)
@@ -183,7 +186,7 @@ def rungame():
     snake = Snake()
     apple = Apple(apple_position)
     while running:
-        fps.tick(30) #초당 10프레임?로 재
+        fps.tick(60) #초당 10프레임?로 재
         screen.fill(WHITE)
         for i in range(len(snake_position)):
             snake.make_snake(snake_position[i])
